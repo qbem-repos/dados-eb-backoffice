@@ -6,8 +6,17 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "alembic>=1.18.4",
+    "asyncpg>=0.31.0",
     "psycopg2>=2.9.11",
+    "sqlalchemy-utils>=0.42.1",
+    "uvicorn>=0.41.0",
     "shareds",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+    "pytest-asyncio>=1.3.0",
 ]
 
 [tool.uv.sources]
