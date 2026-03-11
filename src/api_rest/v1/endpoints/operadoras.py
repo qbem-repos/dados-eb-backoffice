@@ -6,8 +6,8 @@ from typing import List
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from shareds.services.api_utils.jwt_token import JWTToken
 from shareds.services.app_security.user_scope import UserScope
+from src.api_rest.auth import get_current_user
 from src.data.db_backoffice_eb.db_session import get_async_db_session_dependency
 from src.application.rpas.operadora import OperadoraService
 
@@ -22,7 +22,7 @@ def _to_output(model, output_cls):
 @router.post("", response_model=OperadoraService.Create.Output)
 async def create_operadora(
     data: OperadoraService.Create.Input,
-    user_scope: UserScope = Depends(JWTToken.get_current_user),
+    user_scope: UserScope = Depends(get_current_user),
     db_session: AsyncSession = Depends(get_async_db_session_dependency),
 ):
     model = await OperadoraService.Create.create_operadora(
@@ -37,7 +37,7 @@ async def create_operadora(
 @router.get("/{nome}", response_model=OperadoraService.Read.Output)
 async def get_operadora(
     nome: str,
-    user_scope: UserScope = Depends(JWTToken.get_current_user),
+    user_scope: UserScope = Depends(get_current_user),
     db_session: AsyncSession = Depends(get_async_db_session_dependency),
 ):
     payload = OperadoraService.Read.Input(nome=nome)
@@ -48,7 +48,7 @@ async def get_operadora(
 @router.get("", response_model=List[OperadoraService.List.Input])
 async def list_operadoras(
     nome: str | None = None,
-    user_scope: UserScope = Depends(JWTToken.get_current_user),
+    user_scope: UserScope = Depends(get_current_user),
     db_session: AsyncSession = Depends(get_async_db_session_dependency),
 ):
     payload = OperadoraService.List.Input(nome=nome)
@@ -60,7 +60,7 @@ async def list_operadoras(
 async def update_operadora(
     nome: str,
     data: OperadoraService.Update.Input,
-    user_scope: UserScope = Depends(JWTToken.get_current_user),
+    user_scope: UserScope = Depends(get_current_user),
     db_session: AsyncSession = Depends(get_async_db_session_dependency),
 ):
     payload = OperadoraService.Update.Input(
@@ -79,7 +79,7 @@ async def update_operadora(
 @router.delete("/{nome}", response_model=dict)
 async def delete_operadora(
     nome: str,
-    user_scope: UserScope = Depends(JWTToken.get_current_user),
+    user_scope: UserScope = Depends(get_current_user),
     db_session: AsyncSession = Depends(get_async_db_session_dependency),
 ):
     payload = OperadoraService.Delete.Input(nome=nome)

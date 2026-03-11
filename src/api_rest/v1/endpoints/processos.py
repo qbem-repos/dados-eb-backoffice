@@ -6,8 +6,8 @@ from typing import List
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from shareds.services.api_utils.jwt_token import JWTToken
 from shareds.services.app_security.user_scope import UserScope
+from src.api_rest.auth import get_current_user
 from src.data.db_backoffice_eb.db_session import get_async_db_session_dependency
 from src.application.rpas.processo import ProcessoService
 
@@ -22,7 +22,7 @@ def _to_output(model, output_cls):
 @router.post("", response_model=ProcessoService.Create.Output)
 async def create_processo(
     data: ProcessoService.Create.Input,
-    user_scope: UserScope = Depends(JWTToken.get_current_user),
+    user_scope: UserScope = Depends(get_current_user),
     db_session: AsyncSession = Depends(get_async_db_session_dependency),
 ):
     model = await ProcessoService.Create.create_processo(
@@ -37,7 +37,7 @@ async def create_processo(
 @router.get("/{nome}", response_model=ProcessoService.Read.Output)
 async def get_processo(
     nome: str,
-    user_scope: UserScope = Depends(JWTToken.get_current_user),
+    user_scope: UserScope = Depends(get_current_user),
     db_session: AsyncSession = Depends(get_async_db_session_dependency),
 ):
     payload = ProcessoService.Read.Input(nome=nome)
@@ -48,7 +48,7 @@ async def get_processo(
 @router.get("", response_model=List[ProcessoService.List.Input])
 async def list_processos(
     nome: str | None = None,
-    user_scope: UserScope = Depends(JWTToken.get_current_user),
+    user_scope: UserScope = Depends(get_current_user),
     db_session: AsyncSession = Depends(get_async_db_session_dependency),
 ):
     payload = ProcessoService.List.Input(nome=nome)
@@ -60,7 +60,7 @@ async def list_processos(
 async def update_processo(
     nome: str,
     data: ProcessoService.Update.Input,
-    user_scope: UserScope = Depends(JWTToken.get_current_user),
+    user_scope: UserScope = Depends(get_current_user),
     db_session: AsyncSession = Depends(get_async_db_session_dependency),
 ):
     payload = ProcessoService.Update.Input(
@@ -79,7 +79,7 @@ async def update_processo(
 @router.delete("/{nome}", response_model=dict)
 async def delete_processo(
     nome: str,
-    user_scope: UserScope = Depends(JWTToken.get_current_user),
+    user_scope: UserScope = Depends(get_current_user),
     db_session: AsyncSession = Depends(get_async_db_session_dependency),
 ):
     payload = ProcessoService.Delete.Input(nome=nome)

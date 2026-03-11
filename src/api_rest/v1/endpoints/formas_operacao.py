@@ -6,8 +6,8 @@ from typing import List
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from shareds.services.api_utils.jwt_token import JWTToken
 from shareds.services.app_security.user_scope import UserScope
+from src.api_rest.auth import get_current_user
 from src.data.db_backoffice_eb.db_session import get_async_db_session_dependency
 from src.application.rpas.forma_operacao import FormaOperacaoService
 
@@ -22,7 +22,7 @@ def _to_output(model, output_cls):
 @router.post("", response_model=FormaOperacaoService.Create.Output)
 async def create_forma_operacao(
     data: FormaOperacaoService.Create.Input,
-    user_scope: UserScope = Depends(JWTToken.get_current_user),
+    user_scope: UserScope = Depends(get_current_user),
     db_session: AsyncSession = Depends(get_async_db_session_dependency),
 ):
     model = await FormaOperacaoService.Create.create_forma_operacao(
@@ -37,7 +37,7 @@ async def create_forma_operacao(
 @router.get("/{nome}", response_model=FormaOperacaoService.Read.Output)
 async def get_forma_operacao(
     nome: str,
-    user_scope: UserScope = Depends(JWTToken.get_current_user),
+    user_scope: UserScope = Depends(get_current_user),
     db_session: AsyncSession = Depends(get_async_db_session_dependency),
 ):
     payload = FormaOperacaoService.Read.Input(nome=nome)
@@ -48,7 +48,7 @@ async def get_forma_operacao(
 @router.get("", response_model=List[FormaOperacaoService.List.Input])
 async def list_formas_operacao(
     nome: str | None = None,
-    user_scope: UserScope = Depends(JWTToken.get_current_user),
+    user_scope: UserScope = Depends(get_current_user),
     db_session: AsyncSession = Depends(get_async_db_session_dependency),
 ):
     payload = FormaOperacaoService.List.Input(nome=nome)
@@ -60,7 +60,7 @@ async def list_formas_operacao(
 async def update_forma_operacao(
     nome: str,
     data: FormaOperacaoService.Update.Input,
-    user_scope: UserScope = Depends(JWTToken.get_current_user),
+    user_scope: UserScope = Depends(get_current_user),
     db_session: AsyncSession = Depends(get_async_db_session_dependency),
 ):
     payload = FormaOperacaoService.Update.Input(
@@ -79,7 +79,7 @@ async def update_forma_operacao(
 @router.delete("/{nome}", response_model=dict)
 async def delete_forma_operacao(
     nome: str,
-    user_scope: UserScope = Depends(JWTToken.get_current_user),
+    user_scope: UserScope = Depends(get_current_user),
     db_session: AsyncSession = Depends(get_async_db_session_dependency),
 ):
     payload = FormaOperacaoService.Delete.Input(nome=nome)

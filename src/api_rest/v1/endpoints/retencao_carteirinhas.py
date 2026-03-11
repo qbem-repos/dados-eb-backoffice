@@ -6,8 +6,8 @@ from typing import List
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from shareds.services.api_utils.jwt_token import JWTToken
 from shareds.services.app_security.user_scope import UserScope
+from src.api_rest.auth import get_current_user
 from src.data.db_backoffice_eb.db_session import get_async_db_session_dependency
 from src.application.rpas.retencao_carteirinha import RetencaoCarteirinhaService
 
@@ -22,7 +22,7 @@ def _to_output(model, output_cls):
 @router.post("", response_model=RetencaoCarteirinhaService.Create.Output)
 async def create_retencao_carteirinha(
     data: RetencaoCarteirinhaService.Create.Input,
-    user_scope: UserScope = Depends(JWTToken.get_current_user),
+    user_scope: UserScope = Depends(get_current_user),
     db_session: AsyncSession = Depends(get_async_db_session_dependency),
 ):
     model = await RetencaoCarteirinhaService.Create.create_retencao_carteirinha(
@@ -37,7 +37,7 @@ async def create_retencao_carteirinha(
 @router.get("/{nome}", response_model=RetencaoCarteirinhaService.Read.Output)
 async def get_retencao_carteirinha(
     nome: str,
-    user_scope: UserScope = Depends(JWTToken.get_current_user),
+    user_scope: UserScope = Depends(get_current_user),
     db_session: AsyncSession = Depends(get_async_db_session_dependency),
 ):
     payload = RetencaoCarteirinhaService.Read.Input(nome=nome)
@@ -48,7 +48,7 @@ async def get_retencao_carteirinha(
 @router.get("", response_model=List[RetencaoCarteirinhaService.List.Input])
 async def list_retencoes_carteirinha(
     nome: str | None = None,
-    user_scope: UserScope = Depends(JWTToken.get_current_user),
+    user_scope: UserScope = Depends(get_current_user),
     db_session: AsyncSession = Depends(get_async_db_session_dependency),
 ):
     payload = RetencaoCarteirinhaService.List.Input(nome=nome)
@@ -60,7 +60,7 @@ async def list_retencoes_carteirinha(
 async def update_retencao_carteirinha(
     nome: str,
     data: RetencaoCarteirinhaService.Update.Input,
-    user_scope: UserScope = Depends(JWTToken.get_current_user),
+    user_scope: UserScope = Depends(get_current_user),
     db_session: AsyncSession = Depends(get_async_db_session_dependency),
 ):
     payload = RetencaoCarteirinhaService.Update.Input(
@@ -79,7 +79,7 @@ async def update_retencao_carteirinha(
 @router.delete("/{nome}", response_model=dict)
 async def delete_retencao_carteirinha(
     nome: str,
-    user_scope: UserScope = Depends(JWTToken.get_current_user),
+    user_scope: UserScope = Depends(get_current_user),
     db_session: AsyncSession = Depends(get_async_db_session_dependency),
 ):
     payload = RetencaoCarteirinhaService.Delete.Input(nome=nome)

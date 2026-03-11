@@ -6,8 +6,8 @@ from typing import List
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from shareds.services.api_utils.jwt_token import JWTToken
 from shareds.services.app_security.user_scope import UserScope
+from src.api_rest.auth import get_current_user
 from src.data.db_backoffice_eb.db_session import get_async_db_session_dependency
 from src.application.rpas.tipo_contrato import TipoContratoService
 
@@ -22,7 +22,7 @@ def _to_output(model, output_cls):
 @router.post("", response_model=TipoContratoService.Create.Output)
 async def create_tipo_contrato(
     data: TipoContratoService.Create.Input,
-    user_scope: UserScope = Depends(JWTToken.get_current_user),
+    user_scope: UserScope = Depends(get_current_user),
     db_session: AsyncSession = Depends(get_async_db_session_dependency),
 ):
     model = await TipoContratoService.Create.create_tipo_contrato(
@@ -37,7 +37,7 @@ async def create_tipo_contrato(
 @router.get("/{nome}", response_model=TipoContratoService.Read.Output)
 async def get_tipo_contrato(
     nome: str,
-    user_scope: UserScope = Depends(JWTToken.get_current_user),
+    user_scope: UserScope = Depends(get_current_user),
     db_session: AsyncSession = Depends(get_async_db_session_dependency),
 ):
     payload = TipoContratoService.Read.Input(nome=nome)
@@ -48,7 +48,7 @@ async def get_tipo_contrato(
 @router.get("", response_model=List[TipoContratoService.List.Input])
 async def list_tipos_contrato(
     nome: str | None = None,
-    user_scope: UserScope = Depends(JWTToken.get_current_user),
+    user_scope: UserScope = Depends(get_current_user),
     db_session: AsyncSession = Depends(get_async_db_session_dependency),
 ):
     payload = TipoContratoService.List.Input(nome=nome)
@@ -60,7 +60,7 @@ async def list_tipos_contrato(
 async def update_tipo_contrato(
     nome: str,
     data: TipoContratoService.Update.Input,
-    user_scope: UserScope = Depends(JWTToken.get_current_user),
+    user_scope: UserScope = Depends(get_current_user),
     db_session: AsyncSession = Depends(get_async_db_session_dependency),
 ):
     payload = TipoContratoService.Update.Input(
@@ -79,7 +79,7 @@ async def update_tipo_contrato(
 @router.delete("/{nome}", response_model=dict)
 async def delete_tipo_contrato(
     nome: str,
-    user_scope: UserScope = Depends(JWTToken.get_current_user),
+    user_scope: UserScope = Depends(get_current_user),
     db_session: AsyncSession = Depends(get_async_db_session_dependency),
 ):
     payload = TipoContratoService.Delete.Input(nome=nome)

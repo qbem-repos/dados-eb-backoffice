@@ -6,8 +6,8 @@ from typing import List
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from shareds.services.api_utils.jwt_token import JWTToken
 from shareds.services.app_security.user_scope import UserScope
+from src.api_rest.auth import get_current_user
 from src.data.db_backoffice_eb.db_session import get_async_db_session_dependency
 from src.application.rpas.rpa import RPAService
 from src.data.db_backoffice_eb.models.rpas import RPAModel
@@ -23,7 +23,7 @@ def _to_output(model, output_cls):
 @router.post("", response_model=RPAService.Create.Output)
 async def create_rpa(
     data: RPAService.Create.Input,
-    user_scope: UserScope = Depends(JWTToken.get_current_user),
+    user_scope: UserScope = Depends(get_current_user),
     db_session: AsyncSession = Depends(get_async_db_session_dependency),
 ):
     model = await RPAService.Create.create_rpa(
@@ -38,7 +38,7 @@ async def create_rpa(
 @router.get("/{rpa_id}", response_model=RPAService.Read.Output)
 async def get_rpa(
     rpa_id: int,
-    user_scope: UserScope = Depends(JWTToken.get_current_user),
+    user_scope: UserScope = Depends(get_current_user),
     db_session: AsyncSession = Depends(get_async_db_session_dependency),
 ):
     payload = RPAService.Read.Input(id=rpa_id)
@@ -48,7 +48,7 @@ async def get_rpa(
 
 @router.get("", response_model=List[RPAService.List.Output])
 async def list_rpas(
-    user_scope: UserScope = Depends(JWTToken.get_current_user),
+    user_scope: UserScope = Depends(get_current_user),
     db_session: AsyncSession = Depends(get_async_db_session_dependency),
 ):
     return await RPAService.List.list_rpas(user_scope, db_session)
@@ -58,7 +58,7 @@ async def list_rpas(
 async def update_rpa(
     rpa_id: int,
     data: RPAService.Update.Input,
-    user_scope: UserScope = Depends(JWTToken.get_current_user),
+    user_scope: UserScope = Depends(get_current_user),
     db_session: AsyncSession = Depends(get_async_db_session_dependency),
 ):
     payload = RPAService.Update.Input(
@@ -77,7 +77,7 @@ async def update_rpa(
 @router.delete("/{rpa_id}", response_model=dict)
 async def delete_rpa(
     rpa_id: int,
-    user_scope: UserScope = Depends(JWTToken.get_current_user),
+    user_scope: UserScope = Depends(get_current_user),
     db_session: AsyncSession = Depends(get_async_db_session_dependency),
 ):
     payload = RPAService.Delete.Input(id=rpa_id)
@@ -87,7 +87,7 @@ async def delete_rpa(
 
 @router.get("/bi", response_model=dict)
 async def get_rpa_bi(
-    user_scope: UserScope = Depends(JWTToken.get_current_user),
+    user_scope: UserScope = Depends(get_current_user),
     db_session: AsyncSession = Depends(get_async_db_session_dependency),
 ):
     table_items = await RPAService.BI.list_full_table(
