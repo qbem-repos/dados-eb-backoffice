@@ -35,6 +35,34 @@ async def create_rpa(
     return _to_output(model, RPAService.Create.Output)
 
 
+@router.get("/bi", response_model=dict)
+async def get_rpa_bi(
+    user_scope: UserScope = Depends(get_current_user),
+    db_session: AsyncSession = Depends(get_async_db_session_dependency),
+):
+    table_items = await RPAService.BI.list_full_table(
+        user_scope,
+        db_session,
+    )
+    output_model = RPAModel.to_pydantic_schema()
+    table = [output_model.model_validate(item, from_attributes=True) for item in table_items]
+
+    total = await RPAService.BI.total_rpas(user_scope, db_session)
+    total_por_status = await RPAService.BI.total_por_status(user_scope, db_session)
+    total_por_status_acesso = await RPAService.BI.total_por_status_acesso(user_scope, db_session)
+    total_por_produto = await RPAService.BI.total_por_produto(user_scope, db_session)
+    total_por_processo = await RPAService.BI.total_por_processo(user_scope, db_session)
+
+    return {
+        "tabela_rpas": table,
+        "total_rpas": total,
+        "total_por_status": total_por_status,
+        "total_por_status_acesso": total_por_status_acesso,
+        "total_por_produto": total_por_produto,
+        "total_por_processo": total_por_processo,
+    }
+
+
 @router.get("/{rpa_id}", response_model=RPAService.Read.Output)
 async def get_rpa(
     rpa_id: int,
@@ -83,32 +111,3 @@ async def delete_rpa(
     payload = RPAService.Delete.Input(id=rpa_id)
     await RPAService.Delete.delete_rpa(payload, user_scope, db_session)
     return {"deleted": True}
-
-
-@router.get("/bi", response_model=dict)
-async def get_rpa_bi(
-    user_scope: UserScope = Depends(get_current_user),
-    db_session: AsyncSession = Depends(get_async_db_session_dependency),
-):
-    table_items = await RPAService.BI.list_full_table(
-        RPAService.BI.ListTableInput(),
-        user_scope,
-        db_session,
-    )
-    output_model = RPAModel.to_pydantic_schema()
-    table = [output_model.model_validate(item, from_attributes=True) for item in table_items]
-
-    total = await RPAService.BI.total_rpas(user_scope, db_session)
-    total_por_status = await RPAService.BI.total_por_status(user_scope, db_session)
-    total_por_status_acesso = await RPAService.BI.total_por_status_acesso(user_scope, db_session)
-    total_por_produto = await RPAService.BI.total_por_produto(user_scope, db_session)
-    total_por_processo = await RPAService.BI.total_por_processo(user_scope, db_session)
-
-    return {
-        "tabela_rpas": table,
-        "total_rpas": total,
-        "total_por_status": total_por_status,
-        "total_por_status_acesso": total_por_status_acesso,
-        "total_por_produto": total_por_produto,
-        "total_por_processo": total_por_processo,
-    }

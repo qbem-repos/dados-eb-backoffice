@@ -214,22 +214,12 @@ class RPAService:
                 raise Exceptions.GenericError(f"Erro inesperado ao deletar RPA: {err}")
 
     class BI:
-        class ListTableInput(BaseModel):
-            id: int | None = None
-            nome: str | None = None
-
-        class TotalByInput(BaseModel):
-            nome: str | None = None
 
         @staticmethod
         @security_check("eb_backoffice", req_superadmin=True, check_data_filters=False)
-        async def list_full_table(data: ListTableInput, user_scope: UserScope, session: AsyncSession):
+        async def list_full_table(user_scope: UserScope, session: AsyncSession):
             try:
                 query = select(RPAModel)
-                if data.id is not None:
-                    query = query.where(RPAModel.id == data.id)
-                if data.nome:
-                    query = query.where(RPAModel.nome.ilike(f"%{data.nome}%"))
                 result = await session.execute(query)
                 return result.scalars().all()
             except OperationalError:
