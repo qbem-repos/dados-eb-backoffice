@@ -2,6 +2,7 @@ import sys
 import pathlib
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 sys.path.append(str(pathlib.Path(__file__).resolve().parents[2]))
 
@@ -15,5 +16,13 @@ description = """
 """
 
 app = FastAPI(title="Backoffice EB API", version="v1", description=description)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.mount("/backoffice/v1", backoffice_app)
