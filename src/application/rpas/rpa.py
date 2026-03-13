@@ -245,7 +245,7 @@ class RPAService:
                 result = await session.execute(
                     select(RPAModel.status_nome, func.count(RPAModel.id)).group_by(RPAModel.status_nome)
                 )
-                return [{"status_nome": row[0], "total": row[1]} for row in result.all()]
+                return {row[0]: row[1] for row in result.all()}
             except OperationalError:
                 raise Exceptions.DBConnectionError("Erro de conexão com a base de dados.")
             except Exception as err:
