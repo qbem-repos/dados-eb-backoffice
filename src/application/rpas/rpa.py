@@ -258,7 +258,7 @@ class RPAService:
                 result = await session.execute(
                     select(RPAModel.status_acesso_nome, func.count(RPAModel.id)).group_by(RPAModel.status_acesso_nome)
                 )
-                return [{"status_acesso_nome": row[0], "total": row[1]} for row in result.all()]
+                return [{"name": row[0], "value": row[1]} for row in result.all()]
             except OperationalError:
                 raise Exceptions.DBConnectionError("Erro de conexão com a base de dados.")
             except Exception as err:
@@ -271,7 +271,7 @@ class RPAService:
                 result = await session.execute(
                     select(RPAModel.produto_nome, func.count(RPAModel.id)).group_by(RPAModel.produto_nome)
                 )
-                return [{"produto_nome": row[0], "total": row[1]} for row in result.all()]
+                return [{"name": row[0], "value": row[1]} for row in result.all()]
             except OperationalError:
                 raise Exceptions.DBConnectionError("Erro de conexão com a base de dados.")
             except Exception as err:
@@ -284,7 +284,7 @@ class RPAService:
                 result = await session.execute(
                     select(RPAModel.processo_nome, func.count(RPAModel.id)).group_by(RPAModel.processo_nome)
                 )
-                return [{"processo_nome": row[0], "total": row[1]} for row in result.all()]
+                return [{"name": row[0], "value": row[1]} for row in result.all()]
             except OperationalError:
                 raise Exceptions.DBConnectionError("Erro de conexão com a base de dados.")
             except Exception as err:
